@@ -12,9 +12,12 @@ pipeline {
         }
         
         stage('Code Quality'){
-                def scannerHome = tool name: 'sonar_scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
-                withSonarQubeEnv('sonar_scanner') { 
-                    sh "${scannerHome}/bin/sonar-scanner"
+            steps{
+                script{
+                    def scannerHome = tool  'sonarqube';
+                    withSonarQubeEnv('sonarqube') { 
+                        sh "${tool("sonarqube")}/bin/sonar-scanner"
+                    }
                 }    
             }    
             
