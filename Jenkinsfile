@@ -10,32 +10,32 @@ pipeline {
                 sh "mvn --batch-mode package" 
             }
         }
-        
-        stage('Code Quality'){
-            steps{
-                script{
-                    def scannerHome = tool  'sonarqube';
-                    withSonarQubeEnv('sonarqube') { 
-                        sh "${tool("sonarqube")}/bin/sonar-scanner"
-                    }
-                }    
-            }    
-            
-        }    
 
-        stage('Archive Unit Tests Results') {
+        stage('Code Quality') {
+           steps {
+               script {
+                  def scannerHome = tool 'sonarqube';
+                  withSonarQubeEnv("sonarqube") {
+                    sh "${tool("sonarqube")}/bin/sonar-scanner"
+                  }
+               }
+           }
+        }
+
+        stage('Archive Unit Tests Results and Publish') {
             steps {
                 echo 'Archive Unit Test Results'
                step([$class: 'JUnitResultArchiver', testResults: 'target/surefire-reports/TEST-*.xml'])
             }
         }
         
-        stage('Publish Unit Test results report') {
+       stage('Publish Unit Test results report') {
             steps {
-                echo 'Report'
+               echo 'Report'
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'target/site/jacoco/', reportFiles: 'index.html', reportName: 'jacaco report', reportTitles: ''])
+                
 
-             }
+            }
         }
         
         stage('Deploy') {
