@@ -4,12 +4,24 @@ pipeline {
     
     stages {
 
-        stage('Build') {
+        stage('Dependency check') {
             steps {
-                echo 'Build'
-                sh "mvn --batch-mode package" 
+                sh "mvn --batch-mode dependency-check:check"
+            }
+            post {
+                always {
+                    publishHTML(target:[
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'target',
+                        reportFiles: 'dependency-check-report.html',
+                        reportName: "OWASP Dependency Check Report"
+                    ])
+                }
             }
         }
+
 
         stage('Code Quality') {
            steps {
